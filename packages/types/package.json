@@ -33,7 +33,7 @@
     }
   },
   "engines": {
-    "node": ">=24.17.0"
+    "node": ">=24.18.1"
   },
   "scripts": {
     "check": "tsgo --noEmit",

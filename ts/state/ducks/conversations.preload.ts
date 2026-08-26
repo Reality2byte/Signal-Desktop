@@ -2632,7 +2632,7 @@ function copyMessageText(
     }
 
     const body = getNotificationTextForMessage(message.attributes);
-    clipboard.writeText(body);
+    await clipboard.writeText(body);
 
     dispatch(noopAction('copyMessageText'));
   };

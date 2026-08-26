@@ -163,6 +163,7 @@ const ALLOWED_DLLS = new Set([
   'setupapi.dll',
   'shell32.dll',
   'shlwapi.dll',
+  'tbs.dll',
   'uiautomationcore.dll',
   'urlmon.dll',
   'user32.dll',

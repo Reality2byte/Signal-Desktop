@@ -25,6 +25,7 @@ const ELECTRON_MAIN_MODULES = new Set([
   'BaseWindow',
   'BrowserView',
   'BrowserWindow',
+  'ClipboardItem',
   'contentTracing',
   'desktopCapturer',
   'dialog',

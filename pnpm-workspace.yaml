@@ -17,6 +17,7 @@ minimumReleaseAgeStrict: true
 minimumReleaseAgeExclude:
   - '@signalapp/*'
   - 'electron'
+  - node-abi@4.34.0
 
 trustPolicy: no-downgrade
 trustPolicyExclude:
@@ -58,6 +59,7 @@ auditConfig:
 
 overrides:
   '@electron/rebuild>node-gyp': '12.4.0'
+  '@electron/rebuild>node-abi': '4.34.0'
   'brace-expansion@5': '^5.0.9'
   'brace-expansion@2': '^2.1.4'
   'brace-expansion@1': '^1.1.18'
