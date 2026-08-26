@@ -69,6 +69,7 @@ import type {
   RawTimings,
   RegistrationWorkflow,
   Timings,
+  UpdateRequiredStage,
   VerificationCodeStage,
   VerifyPINStage,
 } from '../../types/StandaloneRegistration.std.ts';
@@ -277,6 +278,14 @@ export function moveToVerificationStage({
       reason: 'standalone registration',
     });
 
+    const afterCaptchaWorkflow = getState().standaloneInstaller.workflow;
+    if (afterCaptchaWorkflow?.stage !== RegistrationStage.CAPTCHA) {
+      log.warn(
+        `${logId}: Captcha challenge returned, but workflow is now at stage ${afterCaptchaWorkflow?.stage}`
+      );
+      return;
+    }
+
     try {
       workflow = {
         ...workflow,
@@ -324,7 +333,7 @@ export function moveToVerificationStage({
       if (
         error instanceof LibSignalErrorBase &&
         (error.is(ErrorCode.RegistrationRequestRejected) ||
-          error.is(ErrorCode.RegistrationRequestRejected))
+          error.is(ErrorCode.RegistrationRequestInvalid))
       ) {
         workflow = {
           ...workflow,
@@ -667,8 +676,7 @@ export function submitVerificationCode({
           PartialRegistrationType.EXISTING__PROFILE
         );
       } else {
-        // We own storage service; no prior data there. We just turn it on!
-        enableStorageService();
+        enableStorageService(); // submitVerificationCode: no prior data there, just turn it on
         await itemStorage.put(
           'standaloneRegistrationPartialState',
           PartialRegistrationType.NEW_ACCOUNT__PROFILE
@@ -702,9 +710,8 @@ export function submitVerificationCode({
           },
           avatars: undefined,
         };
-      }
-
-      if (!accountState) {
+      } else {
+        enableStorageService(); // submitVerificationCode: Got a random error back from account creation
         workflow = {
           ...workflow,
           status: {
@@ -917,12 +924,12 @@ export function verifyPIN({
             // Something has really gone wrong - we're in reglock, but SVR has nothing for us
             dispatch(updateWorkflow(workflow, FatalErrorType.UNEXPECTED));
           } else {
-            // No reglock and nothing in SVR - let's allow the user to create a new PIN
-            enableStorageService();
+            enableStorageService(); // verifyPIN: nothing in SVR; will start afresh with new key
             await itemStorage.put(
               'standaloneRegistrationPartialState',
               PartialRegistrationType.NEW_ACCOUNT__PIN
             );
+            // No reglock and nothing in SVR - let's allow the user to create a new PIN
             dispatch(goToCreatePINStage());
           }
         } else {
@@ -959,7 +966,7 @@ export function verifyPIN({
           toBase64(masterKey)
         );
         await itemStorage.put('standaloneRegistrationPartialState', undefined);
-        enableStorageService();
+        enableStorageService(); // verifyPIN: No reglock, got temporary master key
       } catch (error) {
         log.error(
           `${logId}: error saving data after creating account`,
@@ -1014,7 +1021,7 @@ export function verifyPIN({
 
     try {
       disableStorageService(
-        'standaloneInstaller/verifyPIN, about to create account'
+        'standaloneInstaller/verifyPIN: Reglock, about to create account'
       );
       await accountManager.registerAsPrimaryDevice({
         number: phoneNumber,
@@ -1028,6 +1035,12 @@ export function verifyPIN({
         toLogFormat(error)
       );
 
+      workflow = {
+        ...workflow,
+        status: {
+          type: 'ready',
+        },
+      };
       dispatch({
         type: UPDATE_WORKFLOW,
         payload: {
@@ -1057,20 +1070,14 @@ export function verifyPIN({
         ourConversation.set({ avatars });
         await DataWriter.updateConversation(ourConversation.attributes);
       }
-
-      enableStorageService();
     } catch (error) {
+      // The account is created, so we should let the user go to the inbox
       log.error(
         `${logId}: error saving data after creating account`,
         toLogFormat(error)
       );
-      dispatch({
-        type: UPDATE_WORKFLOW,
-        payload: {
-          workflow,
-          fatalError: FatalErrorType.UNEXPECTED,
-        },
-      });
+    } finally {
+      enableStorageService(); // verifyPIN: Created account with reglock, tried to set things up
     }
 
     try {
@@ -1092,17 +1099,11 @@ export function verifyPIN({
           : undefined,
       });
     } catch (error) {
+      // The account is created, so we should let the user go to the inbox
       log.error(
         `${logId}: error queueing important jobs after creating account`,
         toLogFormat(error)
       );
-      dispatch({
-        type: UPDATE_WORKFLOW,
-        payload: {
-          workflow,
-          fatalError: FatalErrorType.UNEXPECTED,
-        },
-      });
     }
 
     await completeRegistration({ workflow: previousWorkflow })(
@@ -1205,6 +1206,16 @@ export function goToAccountLockedStage(): UpdateWorkflowActionType {
 
   const workflow: AccountLockedStage = {
     stage: RegistrationStage.ACCOUNT_LOCKED,
+  };
+  return updateWorkflow(workflow);
+}
+
+function goToUpdateRequiredStage(): UpdateWorkflowActionType {
+  const logId = 'goToUpdateRequiredStage';
+  log.info(logId);
+
+  const workflow: UpdateRequiredStage = {
+    stage: RegistrationStage.UPDATE_REQUIRED,
   };
   return updateWorkflow(workflow);
 }
@@ -1409,6 +1420,7 @@ export const actions = {
   goToAccountLockedStage,
   goToCreatePINStage,
   goToProfileEntryStage,
+  goToUpdateRequiredStage,
   goToVerifyPINStage,
   moveToCaptchaStage,
   moveToVerificationStage,
@@ -1431,12 +1443,12 @@ export const useStandaloneInstallerActions = (): BoundActionCreatorsMapObject<
 // Utilities
 
 function analyzeError(error: Error): FatalErrorType {
-  // TODO: might want to do something here for rate limit errors
   if (error instanceof LibSignalErrorBase) {
     if (
       error.is(ErrorCode.ChatServiceInactive) ||
       error.is(ErrorCode.IoError) ||
-      error.is(ErrorCode.PossibleCaptiveNetwork)
+      error.is(ErrorCode.PossibleCaptiveNetwork) ||
+      error.is(ErrorCode.RateLimitedError)
     ) {
       return FatalErrorType.OFFLINE;
     }
@@ -1496,19 +1508,35 @@ export function reducer(
       return getEmptyState();
     }
 
-    if (newWorkflow.stage === RegistrationStage.PHONE_NUMBER) {
-      log.info(
-        `UPDATE_WORKFLOW: Transitioning from ${previousWorkflow?.stage ?? '<none>'} to ${newWorkflow.stage}`
-      );
+    const previousOrder = previousWorkflow?.stage
+      ? StageOrder[previousWorkflow.stage]
+      : StageOrder[RegistrationStage.PHONE_NUMBER] - 1;
+    const currentOrder = StageOrder[newWorkflow.stage];
+    const direction =
+      currentOrder >= previousOrder ? Direction.FORWARD : Direction.BACKWARD;
+
+    if (previousWorkflow?.stage === newWorkflow.stage) {
       return {
         ...state,
         workflow: newWorkflow,
         fatalError,
-        direction:
-          previousWorkflow &&
-          previousWorkflow.stage !== RegistrationStage.PHONE_NUMBER
-            ? Direction.BACKWARD
-            : Direction.FORWARD,
+        direction,
+      };
+    }
+
+    if (
+      newWorkflow.stage === RegistrationStage.PHONE_NUMBER ||
+      newWorkflow.stage === RegistrationStage.UPDATE_REQUIRED
+    ) {
+      log.info(
+        `UPDATE_WORKFLOW: Transitioning from ${previousWorkflow?.stage ?? '<none>'} to ${newWorkflow.stage}`
+      );
+
+      return {
+        ...state,
+        workflow: newWorkflow,
+        fatalError,
+        direction,
       };
     }
 
@@ -1525,7 +1553,7 @@ export function reducer(
           ...state,
           workflow: newWorkflow,
           fatalError,
-          direction: Direction.FORWARD,
+          direction,
         };
       }
 
@@ -1535,15 +1563,6 @@ export function reducer(
       return {
         ...state,
         fatalError: FatalErrorType.UNEXPECTED,
-      };
-    }
-
-    if (previousWorkflow.stage === newWorkflow.stage) {
-      return {
-        ...state,
-        workflow: newWorkflow,
-        fatalError,
-        direction: Direction.FORWARD,
       };
     }
 
@@ -1562,15 +1581,11 @@ export function reducer(
       `UPDATE_WORKFLOW: Transitioning from ${previousWorkflow.stage} to ${newWorkflow.stage}`
     );
 
-    const previousOrder = StageOrder[previousWorkflow.stage];
-    const currentOrder = StageOrder[previousWorkflow.stage];
-
     return {
       ...state,
       workflow: newWorkflow,
       fatalError,
-      direction:
-        currentOrder >= previousOrder ? Direction.FORWARD : Direction.BACKWARD,
+      direction,
     };
   }
 

@@ -1623,11 +1623,17 @@ async function startApp(): Promise<void> {
         if (
           registrationPartialState === PartialRegistrationType.EXISTING__PIN
         ) {
+          StorageService.disableStorageService(
+            'EXISTING__PIN: Need to get PIN before we turn it on'
+          );
           window.reduxActions.standaloneInstaller.goToVerifyPINStage();
           window.reduxActions.app.openStandalone(startFromBeginning);
         } else if (
           registrationPartialState === PartialRegistrationType.EXISTING__PROFILE
         ) {
+          StorageService.disableStorageService(
+            'EXISTING__PROFILE: Need to get PIN before we turn it on'
+          );
           const hasPin = true;
           window.reduxActions.standaloneInstaller.goToProfileEntryStage(
             hasPin,

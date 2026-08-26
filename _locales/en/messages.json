@@ -9192,13 +9192,29 @@
     "messageformat": "Update Required",
     "description": "The title of update dialog on install screen when app update is required before proceeding with backup import"
   },
+  "icu:InstallScreenUpdateDialog--checking-for-updates": {
+    "messageformat": "Checking for updates",
+    "description": "Text shown with an indeterminate spinner while Signal Desktop checks the internet for newer versions"
+  },
+  "icu:InstallScreenUpdateDialog--updating-signal": {
+    "messageformat": "Updating Signal",
+    "description": "Text shown with a progress bar as Signal Desktop is downloading an updated version"
+  },
+  "icu:InstallScreenUpdateDialog--download-progress": {
+    "messageformat": "Downloading {currentBytes} of {totalBytes} ({percentage, number, percent})...",
+    "description": "Shown below progress bar to provide the details of download. currentBytes and totalBytes will be like 5 GB or 10 GB."
+  },
   "icu:InstallScreenUpdateDialog--update-required__body": {
-    "messageformat": "To complete syncing your messages, update Signal desktop now.",
-    "description": "The body of update dialog on install screen when app update is required before proceeding with backup import"
+    "messageformat": "To continue, update Signal Desktop.",
+    "description": "The body of update dialog on install screen when app update is required before proceeding"
   },
   "icu:InstallScreenUpdateDialog--update-required__action-update": {
     "messageformat": "Update",
-    "description": "The update action of update dialog on install screen when app update is required before proceeding with backup import"
+    "description": "The update action of update dialog on install screen when app update is required"
+  },
+  "icu:InstallScreenUpdateDialog--update-required__action-update__mas": {
+    "messageformat": "Go to the App Store",
+    "description": "The update action of update dialog on install screen when update is required, but app was installed via Mac App Store"
   },
   "icu:InstallScreenUpdateDialog--unsupported-os__title": {
     "messageformat": "Update Required",
@@ -10835,15 +10851,15 @@
     "description": "Toast message when Signal PIN reminder was completed successfully."
   },
   "icu:UnsupportedOSWarningDialog__body": {
-    "messageformat": "Signal desktop will no longer support your computer’s version of {OS} soon. To keep using Signal, update your computer’s operating system by {expirationDate}. <learnMoreLink>Learn more</learnMoreLink>",
+    "messageformat": "Signal Desktop will no longer support your computer’s version of {OS} soon. To keep using Signal, update your computer’s operating system by {expirationDate}. <learnMoreLink>Learn more</learnMoreLink>",
     "description": "Body of a dialog displayed on unsupported operating systems"
   },
   "icu:UnsupportedOSErrorDialog__body": {
-    "messageformat": "Signal desktop no longer works on this computer. To use Signal desktop again, update your computer’s version of {OS}. <learnMoreLink>Learn more</learnMoreLink>",
+    "messageformat": "Signal Desktop no longer works on this computer. To use Signal Desktop again, update your computer’s version of {OS}. <learnMoreLink>Learn more</learnMoreLink>",
     "description": "Body of a dialog displayed on unsupported operating systems"
   },
   "icu:UnsupportedOSErrorToast": {
-    "messageformat": "Signal desktop no longer works on this computer. To use Signal desktop again, update your computer’s version of {OS}.",
+    "messageformat": "Signal Desktop no longer works on this computer. To use Signal Desktop again, update your computer’s version of {OS}.",
     "description": "Body of a dialog displayed on unsupported operating systems"
   },
   "icu:MessageMetadata__edited": {
