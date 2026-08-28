@@ -24,6 +24,8 @@ import {
   PhoneNumberSharingMode,
   parsePhoneNumberSharingMode,
 } from '../types/PhoneNumberSharingMode.std.ts';
+import type { UnreadCountBadgeType } from '../types/StorageKeys.std.ts';
+import { STORAGE_KEY_DEFAULTS } from '../types/StorageKeys.std.ts';
 import {
   PhoneNumberDiscoverability,
   parsePhoneNumberDiscoverability,
@@ -438,6 +440,22 @@ export function toAccountRecord({
       throw missingCaseError(localPhoneNumberSharingMode);
   }
 
+  const localUnreadCountBadgeType = itemStorage.get(
+    'unreadCountBadgeType',
+    STORAGE_KEY_DEFAULTS.unreadCountBadgeType
+  );
+  let unreadBadgeType: Proto.AccountRecord.UnreadBadgeType;
+  switch (localUnreadCountBadgeType) {
+    case 'unread-messages':
+      unreadBadgeType = Proto.AccountRecord.UnreadBadgeType.UNREAD_MESSAGES;
+      break;
+    case 'unread-chats':
+      unreadBadgeType = Proto.AccountRecord.UnreadBadgeType.UNREAD_CHATS;
+      break;
+    default:
+      throw missingCaseError(localUnreadCountBadgeType);
+  }
+
   const phoneNumberDiscoverability = parsePhoneNumberDiscoverability(
     itemStorage.get('phoneNumberDiscoverability')
   );
@@ -637,6 +655,7 @@ export function toAccountRecord({
 
     displayBadgesOnProfile: itemStorage.get('displayBadgesOnProfile') ?? null,
     keepMutedChatsArchived: itemStorage.get('keepMutedChatsArchived') ?? null,
+    unreadBadgeType,
 
     notifyForCallsIfMuted: toOptionalBool(
       itemStorage.get('notifyForCallsIfMuted')
@@ -1686,6 +1705,7 @@ export async function mergeAccountRecord(
     notifyForCallsIfMuted,
     notifyForMentionsIfMuted,
     notifyForRepliesIfMuted,
+    unreadBadgeType,
     hasCompletedUsernameOnboarding,
     hasSeenGroupStoryEducationSheet,
     hasSeenAdminDeleteEducationDialog,
@@ -1978,6 +1998,28 @@ export async function mergeAccountRecord(
     'notifyForRepliesIfMuted',
     fromOptionalBool(notifyForRepliesIfMuted) ?? undefined
   );
+  {
+    let unreadCountBadgeType: UnreadCountBadgeType;
+    switch (unreadBadgeType) {
+      case Proto.AccountRecord.UnreadBadgeType.UNREAD_CHATS:
+        unreadCountBadgeType = 'unread-chats';
+        break;
+      case Proto.AccountRecord.UnreadBadgeType.UNREAD_MESSAGES:
+        unreadCountBadgeType = 'unread-messages';
+        break;
+      case Proto.AccountRecord.UnreadBadgeType.UNKNOWN_BADGE_TYPE:
+      default:
+        unreadCountBadgeType = STORAGE_KEY_DEFAULTS.unreadCountBadgeType;
+    }
+
+    const previousUnreadCountBadgeType = itemStorage.get(
+      'unreadCountBadgeType'
+    );
+    await itemStorage.put('unreadCountBadgeType', unreadCountBadgeType);
+    if (previousUnreadCountBadgeType !== unreadCountBadgeType) {
+      window.Whisper.events.emit('updateUnreadCount');
+    }
+  }
   await itemStorage.put('hasSetMyStoriesPrivacy', hasSetMyStoriesPrivacy);
   {
     await itemStorage.put('hasViewedOnboardingStory', hasViewedOnboardingStory);
@@ -2000,9 +2042,9 @@ export async function mergeAccountRecord(
     hasSeenAdminDeleteEducationDialog ?? false
   );
   {
-    // default to false (exclude muted chats)
     const countMutedConversations =
-      fromOptionalBool(includeMutedChatsInBadge) ?? false;
+      fromOptionalBool(includeMutedChatsInBadge) ??
+      STORAGE_KEY_DEFAULTS['badge-count-muted-conversations'];
     const previous = itemStorage.get('badge-count-muted-conversations', false);
     await itemStorage.put(
       'badge-count-muted-conversations',
@@ -2014,7 +2056,8 @@ export async function mergeAccountRecord(
   }
   await itemStorage.put(
     'reaction-notification',
-    fromOptionalBool(reactionNotifications) ?? true
+    fromOptionalBool(reactionNotifications) ??
+      STORAGE_KEY_DEFAULTS['reaction-notification']
   );
   {
     await itemStorage.put(
