@@ -1,7 +1,7 @@
 // Copyright 2025 Signal Messenger, LLC
 // SPDX-License-Identifier: AGPL-3.0-only
 
-import { contextBridge, ipcRenderer } from 'electron';
+import { ipcRenderer } from 'electron';
 
 export type SignalClipboardType = Readonly<{
   clearIfNeeded: () => void;
@@ -21,5 +21,4 @@ const SignalClipboard: SignalClipboardType = {
   },
 };
 
-contextBridge.exposeInMainWorld('SignalClipboard', SignalClipboard);
 window.SignalClipboard = SignalClipboard;

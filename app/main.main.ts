@@ -771,6 +771,14 @@ async function createWindow() {
 
   // Create the browser window.
   mainWindow = new BrowserWindow(windowOptions);
+
+  mainWindow.webContents.on('preload-error', (_event, _preloadPath, error) => {
+    log.error(Errors.toLogFormat(error));
+    if (isTestEnvironment(getEnvironment())) {
+      app.quit();
+    }
+  });
+
   if (settingsChannel) {
     settingsChannel.setMainWindow(mainWindow);
   }

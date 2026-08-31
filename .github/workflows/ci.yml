@@ -646,7 +646,10 @@ jobs:
           OTEL_EXPORTER_OTLP_HEADERS: ${{ secrets.OTEL_EXPORTER_OTLP_HEADERS }}
 
   auto-merge-ready:
-    if: ${{ github.event_name == 'pull_request' && github.repository == 'signalapp/Signal-Desktop-Private' }}
+    if: |
+      always() &&
+      github.event_name == 'pull_request' &&
+      github.repository == 'signalapp/Signal-Desktop-Private'
     name: Auto Merge Ready
     needs:
       - lint
@@ -660,5 +663,10 @@ jobs:
       - benchmark
     runs-on: ubuntu-latest
     steps:
-      - name: Ok
-        run: echo ok
+      - name: Check if any jobs failed or were cancelled
+        if: |
+          contains(needs.*.result, 'failure') ||
+          contains(needs.*.result, 'cancelled')
+        run: |
+          echo "One or more upstream jobs failed"
+          exit 1
