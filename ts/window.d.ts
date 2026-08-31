@@ -25,6 +25,7 @@ import type { PropsPreloadType as PreferencesPropsType } from './components/Pref
 import type { WindowsNotificationData } from './services/notifications.preload.ts';
 import type { QueryStatsOptions } from './sql/main.main.ts';
 import type { SocketStatuses } from './textsecure/SocketManager.preload.ts';
+import type { SignalClipboardType } from './windows/clipboard.preload.ts';
 
 export type IPCType = {
   addSetupMenuItems: () => void;
@@ -203,11 +204,7 @@ declare global {
     // TODO DESKTOP-4801
     SignalContext: SignalContextType;
 
-    SignalClipboard: {
-      clear: () => void;
-      clearIfNeeded: () => void;
-      copyTextTemporarily: (text: string, clearAfterMs: number) => void;
-    };
+    SignalClipboard: SignalClipboardType;
 
     // Used only in preload to calculate load time
     preloadCompileStartTime: number;

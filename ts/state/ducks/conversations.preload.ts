@@ -5,7 +5,7 @@ import type { ThunkAction } from 'redux-thunk';
 import lodash from 'lodash';
 import { type PhoneNumber } from 'google-libphonenumber';
 
-import { clipboard, ipcRenderer } from 'electron';
+import { ipcRenderer } from 'electron';
 import type { ReadonlyDeep, SetOptional } from 'type-fest';
 import { DataReader, DataWriter } from '../../sql/Client.preload.ts';
 import type { AttachmentType } from '../../types/Attachment.std.ts';
@@ -2641,7 +2641,7 @@ function copyMessageText(
     }
 
     const body = getNotificationTextForMessage(message.attributes);
-    await clipboard.writeText(body);
+    await navigator.clipboard.writeText(body);
 
     dispatch(noopAction('copyMessageText'));
   };

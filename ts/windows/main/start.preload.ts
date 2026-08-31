@@ -6,6 +6,7 @@ import { contextBridge } from 'electron';
 import { createLogger } from '../../logging/log.std.ts';
 
 import '../context.preload.ts';
+import '../clipboard.preload.ts';
 
 // Connect websocket early
 import '../../textsecure/preconnect.preload.ts';

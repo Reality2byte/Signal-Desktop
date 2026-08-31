@@ -113,6 +113,7 @@ import { ChallengeMainHandler } from '../ts/main/challengeMain.main.ts';
 import { NativeThemeNotifier } from '../ts/main/NativeThemeNotifier.main.ts';
 import { PowerChannel } from '../ts/main/powerChannel.main.ts';
 import { SettingsChannel } from '../ts/main/settingsChannel.main.ts';
+import '../ts/main/clipboardMain.main.ts';
 import { maybeParseUrl, setUrlSearchParams } from '../ts/util/url.std.ts';
 import { getHeicConverter } from '../ts/workers/heicConverterMain.main.ts';
 
