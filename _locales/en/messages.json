@@ -8216,6 +8216,14 @@
     "messageformat": "Advanced",
     "description": "Title for advanced settings"
   },
+  "icu:Preferences--change-signal-pin": {
+    "messageformat": "Change your PIN",
+    "description": "Title for changing Signal PIN in settings"
+  },
+  "icu:Preferences--change-signal-pin-button": {
+    "messageformat": "Change",
+    "description": "Button for changing Signal PIN in settings"
+  },
   "icu:Preferences--signal-pin": {
     "messageformat": "Signal PIN",
     "description": "Title for Signal PIN settings"
@@ -10910,6 +10918,10 @@
     "messageformat": "Incorrect PIN. Try again",
     "description": "Error text shown in PIN input box in Signal PIN reminder dialog, when the input was incorrect"
   },
+  "icu:PinReminderModal__forgot": {
+    "messageformat": "Forgot PIN",
+    "description": "Forgot PIN button in Signal PIN reminder dialog"
+  },
   "icu:PinReminderModal__confirm": {
     "messageformat": "Confirm",
     "description": "Confirm button in Signal PIN reminder dialog"
@@ -10917,6 +10929,46 @@
   "icu:PinReminderCompletedToast": {
     "messageformat": "PIN correct. We’ll remind you again later.",
     "description": "Toast message when Signal PIN reminder was completed successfully."
+  },
+  "icu:PinChangeModal__title--create": {
+    "messageformat": "Change your Signal PIN",
+    "description": "Title of Signal PIN change dialog when creating a new PIN"
+  },
+  "icu:PinChangeModal__body--create": {
+    "messageformat": "You can change your PIN as long as this device is registered. <learnMoreLink>Learn more</learnMoreLink>",
+    "description": "Body of Signal PIN change dialog when creating a new PIN"
+  },
+  "icu:PinChangeModal__title--confirm": {
+    "messageformat": "Confirm your Signal PIN",
+    "description": "Title of Signal PIN change dialog when confirming a new PIN"
+  },
+  "icu:PinChangeModal__body--confirm": {
+    "messageformat": "Enter the PIN you just created.",
+    "description": "Body of Signal PIN change dialog when confirming a new PIN"
+  },
+  "icu:PinChangeModal__pin-input-placeholder--create": {
+    "messageformat": "Enter a new PIN",
+    "description": "Placeholder text of PIN input box in Signal PIN change dialog when creating a new PIN"
+  },
+  "icu:PinChangeModal__pin-input-placeholder--confirm": {
+    "messageformat": "Confirm PIN",
+    "description": "Placeholder text of PIN input box in Signal PIN change dialog when confirming PIN"
+  },
+  "icu:PinChangeModal__cancel": {
+    "messageformat": "Cancel",
+    "description": "Cancel button in Signal PIN change dialog"
+  },
+  "icu:PinChangeModal__continue": {
+    "messageformat": "Continue",
+    "description": "Continue button in Signal PIN change dialog, to go to the Confirm step"
+  },
+  "icu:PinChangeModal__confirm": {
+    "messageformat": "Confirm",
+    "description": "Confirm button in Signal PIN change dialog"
+  },
+  "icu:PinChangeCompletedToast": {
+    "messageformat": "New PIN created.",
+    "description": "Toast message when Signal PIN was changed successfully."
   },
   "icu:UnsupportedOSWarningDialog__body": {
     "messageformat": "Signal Desktop will no longer support your computer’s version of {OS} soon. To keep using Signal, update your computer’s operating system by {expirationDate}. <learnMoreLink>Learn more</learnMoreLink>",

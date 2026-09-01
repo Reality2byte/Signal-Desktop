@@ -129,6 +129,7 @@ import {
 } from '../../types/StorageKeys.std.ts';
 import type { BlockedConversation } from '../../components/Preferences.dom.tsx';
 import { pinReminderService } from '../../services/pinReminder.preload.ts';
+import { useGlobalModalActions } from '../ducks/globalModals.preload.ts';
 
 function renderUpdateDialog(
   props: Readonly<{ containerWidthBreakpoint: WidthBreakpoint }>
@@ -240,6 +241,7 @@ export function SmartPreferences(): JSX.Element | null {
   const { internalAddDonationReceipt } = useDonationsActions();
   const { startPlaintextExport, startLocalBackupExport } = useBackupActions();
   const { addVisibleMegaphone } = useMegaphonesActions();
+  const { showPinChangeModal } = useGlobalModalActions();
 
   // Selectors
 
@@ -1200,6 +1202,7 @@ export function SmartPreferences(): JSX.Element | null {
         setGlobalDefaultConversationColor={setGlobalDefaultConversationColor}
         setSettingsLocation={setSettingsLocation}
         shouldShowUpdateDialog={shouldShowUpdateDialog}
+        showPinChangeModal={showPinChangeModal}
         showToast={showToast}
         startLocalBackupExport={startLocalBackupExport}
         startPlaintextExport={startPlaintextExport}

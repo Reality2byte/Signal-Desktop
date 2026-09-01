@@ -91,6 +91,12 @@ class PinReminderService {
     }
   }
 
+  async resetPinReminderTimes(): Promise<void> {
+    await itemStorage.put(STORAGE_KEY_LAST_REMINDER_TIME, Date.now());
+    await itemStorage.put(STORAGE_KEY_NEXT_INTERVAL, this.#defaultInterval);
+    window.reduxActions.globalModals.togglePinReminder(PinReminderState.None);
+  }
+
   handleSkipReminder(): void {
     drop(this.#resolveReminder('skip'));
   }

@@ -73,6 +73,7 @@ export enum ToastType {
   OriginalMessageNotFound = 'OriginalMessageNotFound',
   PinnedConversationsFull = 'PinnedConversationsFull',
   PinnedMessageNotFound = 'PinnedMessageNotFound',
+  PinChangeCompleted = 'PinChangeCompleted',
   PinReminderCompleted = 'PinReminderCompleted',
   PollNotFound = 'PollNotFound',
   ReactionFailed = 'ReactionFailed',
@@ -224,6 +225,7 @@ export type AnyToast =
       maxPinnedConversations: number;
     }
   | { toastType: ToastType.PinnedMessageNotFound }
+  | { toastType: ToastType.PinChangeCompleted }
   | { toastType: ToastType.PinReminderCompleted }
   | { toastType: ToastType.PollNotFound }
   | { toastType: ToastType.ReactionFailed }

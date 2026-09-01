@@ -798,6 +798,12 @@ function renderToast({
     );
   }
 
+  if (toastType === ToastType.PinChangeCompleted) {
+    return (
+      <Toast onClose={hideToast}>{i18n('icu:PinChangeCompletedToast')}</Toast>
+    );
+  }
+
   if (toastType === ToastType.PinReminderCompleted) {
     return (
       <Toast onClose={hideToast}>{i18n('icu:PinReminderCompletedToast')}</Toast>

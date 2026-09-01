@@ -667,6 +667,7 @@ export default {
       'setGlobalDefaultConversationColor'
     ),
     setSettingsLocation: action('setSettingsLocation'),
+    showPinChangeModal: action('showPinChangeModal'),
     showToast: action('showToast'),
     startLocalBackupExport: action('startLocalBackupExport'),
     startPlaintextExport: action('startPlaintextExport'),

@@ -312,6 +312,7 @@ type PropsFunctionType = {
     }
   ) => unknown;
   setSettingsLocation: (settingsLocation: SettingsLocation) => unknown;
+  showPinChangeModal: () => void;
   showToast: (toast: AnyToast) => unknown;
   startLocalBackupExport: () => void;
   startPlaintextExport: () => unknown;
@@ -616,6 +617,7 @@ export function Preferences({
   setGlobalDefaultConversationColor,
   setSettingsLocation,
   shouldShowUpdateDialog,
+  showPinChangeModal,
   showToast,
   startLocalBackupExport,
   startPlaintextExport,
@@ -888,6 +890,17 @@ export function Preferences({
         </List>
         {weArePrimaryDevice && (
           <List label={i18n('icu:Preferences--signal-pin')}>
+            <ItemWithAction
+              label={i18n('icu:Preferences--change-signal-pin')}
+              action={
+                <AxoItem.Action
+                  variant="subtle-secondary"
+                  onClick={showPinChangeModal}
+                >
+                  {i18n('icu:Preferences--change-signal-pin-button')}
+                </AxoItem.Action>
+              }
+            />
             <AxoSwitchItem.Root
               label={i18n('icu:Preferences--pin-reminders--header')}
               description={i18n('icu:Preferences--pin-reminders--description')}

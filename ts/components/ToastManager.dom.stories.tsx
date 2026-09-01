@@ -216,6 +216,8 @@ function getToast(toastType: ToastType): AnyToast {
       };
     case ToastType.PinnedMessageNotFound:
       return { toastType: ToastType.PinnedMessageNotFound };
+    case ToastType.PinChangeCompleted:
+      return { toastType: ToastType.PinChangeCompleted };
     case ToastType.PinReminderCompleted:
       return { toastType: ToastType.PinReminderCompleted };
     case ToastType.PollNotFound:

@@ -181,6 +181,9 @@ export type PropsType = {
   // TerminateGroupFailedModal
   terminateGroupFailedModal: { conversationId: string } | null;
   renderTerminateGroupFailedModal: () => JSX.Element | null;
+  // PinChangeModal
+  isPinChangeModalVisible: boolean;
+  renderPinChangeModal: () => JSX.Element | null;
   // PinReminderModal
   pinReminderState: PinReminderState;
   renderPinReminderModal: () => JSX.Element | null;
@@ -249,6 +252,9 @@ export function GlobalModalContainer({
   // PinMessageDialog
   pinMessageDialogData,
   renderPinMessageDialog,
+  // PinChangeModal
+  isPinChangeModalVisible,
+  renderPinChangeModal,
   // PinReminderModal
   pinReminderState,
   renderPinReminderModal,
@@ -418,6 +424,12 @@ export function GlobalModalContainer({
 
   if (pinMessageDialogData) {
     return renderPinMessageDialog();
+  }
+
+  // PIN change renders with precedence over the reminder modal, since
+  // the reminder modal can open the PIN change modal.
+  if (isPinChangeModalVisible) {
+    return renderPinChangeModal();
   }
 
   if (pinReminderState === PinReminderState.Modal) {
