@@ -761,6 +761,10 @@ export class BackupExportStream extends Readable {
 
     const allNotificationProfiles =
       await DataReader.getAllNotificationProfiles();
+    const isNotificationProfileSyncDisabled = itemStorage.get(
+      'notificationProfileSyncDisabled',
+      false
+    );
 
     for (const profile of allNotificationProfiles) {
       const {
@@ -769,6 +773,7 @@ export class BackupExportStream extends Readable {
         emoji = null,
         color,
         createdAtMs,
+        deletedAtTimestampMs,
         allowAllCalls,
         allowAllMentions,
         allowedMembers,
@@ -776,7 +781,18 @@ export class BackupExportStream extends Readable {
         scheduleStartTime = null,
         scheduleEndTime = null,
         scheduleDaysEnabled,
+        storageID,
       } = profile;
+
+      // Skipping deleted profile
+      if (isNumber(deletedAtTimestampMs) && deletedAtTimestampMs > 0) {
+        continue;
+      }
+
+      // sync=OFF, and so only exporting profiles with storageID (from Primary)
+      if (isNotificationProfileSyncDisabled && !storageID) {
+        continue;
+      }
 
       const allowedRecipients = Array.from(allowedMembers)
         .map(conversationId =>
