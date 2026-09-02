@@ -376,7 +376,7 @@ jobs:
           - name: "(with e164)"
             value: false
           - name: "(without e164)"
-            value: false
+            value: true
         workerIndex:
           - name: '[1/4]'
             value: 0
@@ -385,7 +385,7 @@ jobs:
           - name: '[3/4]'
             value: 2
           - name: '[4/4]'
-            value: 2
+            value: 3
 
     runs-on: ubuntu-latest-16-cores
     if: ${{ github.repository == 'signalapp/Signal-Desktop-Private' }}
