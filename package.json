@@ -7,7 +7,7 @@
   "description": "Private messaging from your desktop",
   "desktopName": "signal.desktop",
   "repository": "https://github.com/signalapp/Signal-Desktop.git",
-  "version": "8.28.0-alpha.1",
+  "version": "8.29.0-alpha.1",
   "license": "AGPL-3.0-only",
   "author": {
     "name": "Signal Messenger, LLC",
@@ -347,16 +347,6 @@
   },
   "engines": {
     "node": "24.19.0"
-  },
-  "devEngines": {
-    "runtime": {
-      "name": "node",
-      "version": "24.19.0"
-    },
-    "packageManager": {
-      "name": "pnpm",
-      "version": "11.24.0"
-    }
   },
   "build": {
     "appId": "org.whispersystems.signal-desktop",
